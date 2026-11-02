@@ -1,0 +1,78 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="apps | Tom Frodyma"
+  description="The apps I built: MailMate, IPM, Skillsloop, and Tophe."
+>
+  <h1 class="sr-only">Apps</h1>
+  <p><span class="nick">&lt;tom&gt;</span> level select: the apps I built.</p>
+
+  <div class="frame">
+    <h2 class="frame-title">MailMate</h2>
+    <p class="status">
+      <span class="ok">live</span>,
+      <span class="dim">50+ people use it daily</span>
+    </p>
+    <p>
+      An AI agent that drafts emails for customer service teams. I rolled it out
+      to Change's clients, trained everyone, and still tune it on their
+      feedback.
+    </p>
+  </div>
+
+  <div class="frame">
+    <h2 class="frame-title">IPM</h2>
+    <p class="status">
+      <span class="ok">live</span>,
+      <span class="dim">Marktplaats, hollandsnieuwe, Eneco eMobility</span>
+    </p>
+    <p>
+      An AI quality-management tool. I redesigned and shipped its complete
+      frontend with AI-assisted development.
+    </p>
+  </div>
+
+  <div class="frame">
+    <h2 class="frame-title">Skillsloop</h2>
+    <p class="status">
+      <span class="warn">pilot</span>,
+      <span class="dim">two POCs</span>
+    </p>
+    <p>
+      An AI role-play app where support agents practice realistic customer
+      conversations. I took it from idea to working product.
+    </p>
+  </div>
+
+  <div class="frame">
+    <h2 class="frame-title">Tophe</h2>
+    <p class="status"><span class="ok">open source</span></p>
+    <p>
+      A personal project, free and open source. Try it at
+      <a href="https://tophe.app">tophe.app</a> or read the code on
+      <a href="https://github.com/TomFrodyma/tophe">GitHub</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  h2.frame-title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  h2.frame-title::before {
+    content: none;
+  }
+
+  .status {
+    margin-top: 0;
+  }
+
+  .frame p:last-child {
+    margin-bottom: 0;
+  }
+</style>

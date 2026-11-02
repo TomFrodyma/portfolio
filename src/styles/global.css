@@ -1,0 +1,367 @@
+/* Textmode design system. Technique adapted from entropic
+   (github.com/CuB3y0nd/entropic, MIT). White background. Body font is a system serif; Gohufont (WTFPL) only for preformatted blocks. */
+
+@font-face {
+  font-family: "gohu";
+  src: url("/fonts/gohu-subset.woff") format("woff");
+  font-display: block;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "gohu-full";
+  src: url("/fonts/gohu-full.woff") format("woff");
+  font-display: block;
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  color-scheme: light;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --bg: #ffffff;
+  --bg-alt: #f3f4f3;
+  --fg: #2a2a28;
+  /* --dim is decoration only (prompt prefixes, borders, markers), it fails AA
+     contrast for body text. Informational secondary text uses --muted. */
+  --dim: #2a2a28;
+  --muted: #2a2a28;
+  --accent: #2a2a28;
+  --accent-bright: #2a2a28;
+  --accent-bg: #f2e3a6;
+  --red: #a54242;
+  --green: #4f6e32;
+  --yellow: #8a5f14;
+  --blue: #3e6a78;
+  --magenta: #8a5a7a;
+  --cyan: #3f7268;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0 auto;
+  padding: 1rem 2ch 2rem;
+  max-width: 640px;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- text --- */
+
+h1,
+h2,
+h3 {
+  font-size: inherit;
+  font-weight: 400;
+  color: var(--fg);
+  margin: 2rem 0 0.5rem;
+}
+
+h2::before {
+  content: "## " / "";
+  color: var(--dim);
+}
+
+h3::before {
+  content: "### " / "";
+  color: var(--dim);
+}
+
+p {
+  margin: 0.75rem 0;
+}
+
+ul {
+  list-style: "\25B8  ";
+  padding-left: 3ch;
+}
+
+li {
+  margin: 0.25rem 0;
+}
+
+li::marker {
+  color: var(--dim);
+}
+
+a {
+  color: var(--accent);
+  /* links match the body color now, underline is what marks them as links */
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover,
+a:focus-visible {
+  background: var(--accent-bg);
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+pre {
+  margin: 0;
+  white-space: pre;
+  /* the voice log on the story page needs a monospace grid to line up */
+  font-family: "gohu", "gohu-full", monospace;
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  line-height: 1;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* --- layout --- */
+
+/* keeps the space the old top nav occupied, the title needs the air */
+main {
+  padding-top: 53px;
+}
+
+/* --- components --- */
+
+.nick {
+  color: var(--accent);
+}
+
+.dim {
+  color: var(--dim);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.ok {
+  color: var(--green);
+}
+
+.warn {
+  color: var(--yellow);
+}
+
+.err {
+  color: var(--red);
+}
+
+.frame {
+  position: relative;
+  border: 1px solid var(--dim);
+  padding: 1rem 2ch;
+  margin: 1.5rem 0;
+}
+
+.frame-title {
+  position: absolute;
+  top: -0.75em;
+  left: 2ch;
+  padding: 0 1ch;
+  background: var(--bg);
+  color: var(--accent);
+}
+
+.btn {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.btn::before {
+  content: "[ " / "";
+}
+
+.btn::after {
+  content: " ]" / "";
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--accent-bg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn:disabled {
+  color: var(--dim);
+  cursor: default;
+  text-decoration: none;
+  background: none;
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid var(--dim);
+  padding: 0 1ch;
+  color: var(--muted);
+}
+
+.cursor::after {
+  content: "\2588" / "";
+  color: var(--accent);
+  animation: blink 1s steps(1) infinite;
+}
+
+/* --- home intro (terminal greeting before the page "pastes" in) --- */
+
+.intro-only {
+  display: none;
+  margin: 1.25rem 0;
+  min-height: 4.6em;
+  font-size: clamp(18px, 3.5vw, 28px);
+  line-height: 1.4;
+}
+
+html.intro .intro-only {
+  display: block;
+}
+
+html.intro .home-rest,
+html.intro .term {
+  display: none;
+}
+
+/* --- bottom terminal (site navigation) --- */
+
+.term {
+  margin-top: 3rem;
+  border-top: 1px solid var(--dim);
+  padding: 1rem 0 0.5rem;
+}
+
+/* on home the prompt sits directly under the ls listing, no separator */
+.term--home {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.term-prompt {
+  white-space: nowrap;
+}
+
+.term-msg {
+  margin: 0.35rem 0;
+}
+
+.term-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1ch;
+  margin: 0.35rem 0;
+}
+
+.term-nav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 0.5ch;
+}
+
+.term-nav a,
+.term-msg a {
+  display: inline-block;
+  padding: 0.15rem 0.5ch;
+}
+
+.term-nav a[aria-current="page"] {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.cmd-btn {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0.15rem 0.5ch;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.cmd-btn:hover,
+.cmd-btn:focus-visible {
+  background: var(--accent-bg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.term-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1ch;
+  margin-top: 0.35rem;
+  padding: 0.35rem 0;
+}
+
+.term-form:focus-within {
+  background: var(--bg-alt);
+}
+
+#term-in {
+  flex: 0 0 auto;
+  width: 1px;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--fg);
+  caret-color: transparent;
+}
+
+#term-in:focus {
+  outline: 0;
+}
+
+/* --- utilities --- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor::after {
+    animation: none;
+  }
+}

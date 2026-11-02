@@ -1,0 +1,108 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  intro?: boolean;
+}
+
+const {
+  title = "Tom Frodyma",
+  description = "AI product manager at Change AI. I build AI products for customer service.",
+  intro = false,
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const norm = (p: string) => p.replace(/\/+$/, "") || "/";
+const current = (href: string): "page" | "true" | undefined => {
+  if (norm(path) === norm(href)) return "page";
+  if (norm(href) !== "/" && norm(path).startsWith(norm(href) + "/")) return "true";
+  return undefined;
+};
+const isHome = norm(path) === "/";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {
+      intro && (
+        <script is:inline>
+          try {
+            var nav = performance.getEntriesByType("navigation")[0];
+            var isReload = nav && nav.type === "reload";
+            var fromThisSite = document.referrer.indexOf(location.origin + "/") === 0;
+            if (
+              (isReload || !fromThisSite) &&
+              !matchMedia("(prefers-reduced-motion: reduce)").matches
+            ) {
+              document.documentElement.classList.add("intro");
+            }
+          } catch (e) {}
+        </script>
+      )
+    }
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+    <div class:list={["term", { "term--home": isHome }]}>
+      <div id="term-out" role="log" aria-label="Command output"></div>
+      {
+        !isHome && (
+          <div class="term-hint">
+            <span class="dim">go to:</span>
+            <nav class="term-nav" aria-label="Site">
+              <a href="/" aria-current={current("/")}>home</a>
+              <a href="/work/" aria-current={current("/work/")}>work</a>
+              <a href="/apps/" aria-current={current("/apps/")}>apps</a>
+              <a href="/story/" aria-current={current("/story/")}>story</a>
+            </nav>
+            <span class="dim term-hint-type">or type below, or </span>
+            <button type="button" class="cmd-btn" data-cmd="help">help</button>
+          </div>
+        )
+      }
+      <form id="term-form" class="term-form">
+        <label for="term-in" class="term-prompt">
+          <span class="nick">&lt;you&gt;</span>
+          <span class="sr-only">(chat box: type a page name and press enter, or use the links)</span>
+        </label>
+        <input
+          id="term-in"
+          type="text"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
+          autocomplete="off"
+          enterkeyhint="go"
+        />
+        <span class="cursor" aria-hidden="true"></span>
+      </form>
+      <noscript>
+        <style>
+          .term-form,
+          #term-out,
+          .term-hint-type,
+          .term-hint .cmd-btn {
+            display: none;
+          }
+        </style>
+      </noscript>
+    </div>
+    <script>
+      import { initTerminal } from "../scripts/terminal.js";
+
+      initTerminal();
+    </script>
+  </body>
+</html>

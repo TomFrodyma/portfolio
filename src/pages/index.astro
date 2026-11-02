@@ -1,0 +1,205 @@
+---
+import Base from "../layouts/Base.astro";
+
+---
+
+<Base title="Tom Frodyma | AI product manager" intro>
+  <h1 class="name">Tom Frodyma</h1>
+  <p class="role">AI product manager at Change AI, Pilsen, Czech Republic</p>
+
+  <div id="intro-out" class="intro-only" aria-hidden="true"></div>
+  <p id="intro-live" class="sr-only" aria-live="polite"></p>
+
+  <div class="home-rest">
+  <p>
+    <span class="nick">&lt;tom&gt;</span> I'm Tom. I build AI products for
+    customer service.
+  </p>
+  <p class="dim">select destination:</p>
+  <ul>
+    <li>
+      <a href="/work/">work</a>
+      <span class="dim">from sales agent to product manager</span>
+    </li>
+    <li>
+      <a href="/apps/">apps</a>
+      <span class="dim">MailMate, IPM, Skillsloop, Tophe</span>
+    </li>
+    <li>
+      <a href="/story/">story</a>
+      <span class="dim">how I got here</span>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/tomfrodyma/">linkedin</a>
+      <span class="dim">let's connect</span>
+    </li>
+  </ul>
+  <p>
+    <span class="nick">&lt;tom&gt;</span> click a link above, or just type
+    where you want to go.
+  </p>
+
+  </div>
+</Base>
+
+<script>
+  const LINES = ["hi stranger!", "nice to meet you."];
+  const root = document.documentElement;
+  const out = document.getElementById("intro-out");
+  const live = document.getElementById("intro-live");
+
+  if (root.classList.contains("intro") && out && live) {
+    let timer = 0;
+    const cursor = document.createElement("span");
+    cursor.className = "cursor";
+
+    const typeHomeRest = () => {
+      const rest = document.querySelector(".home-rest");
+      if (!rest) return;
+      const walker = document.createTreeWalker(rest, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      let n;
+      while ((n = walker.nextNode())) {
+        if (n.data.trim()) {
+          const block = n.parentElement.closest("p, li") || n.parentElement;
+          nodes.push({ node: n, text: n.data, block });
+        }
+      }
+      nodes.forEach((e) => (e.node.data = ""));
+      let idx = 0;
+      let pos = 0;
+      let t = 0;
+      let lit = null;
+      const light = (block) => {
+        if (block === lit) return;
+        if (lit) lit.classList.remove("flowing");
+        lit = block;
+        if (lit) lit.classList.add("flowing");
+      };
+      const finish = () => {
+        window.clearTimeout(t);
+        light(null);
+        document.removeEventListener("keydown", finish);
+        document.removeEventListener("pointerdown", finish);
+        for (; idx < nodes.length; idx++) nodes[idx].node.data = nodes[idx].text;
+      };
+      const tick = () => {
+        let budget = 6;
+        while (budget > 0 && idx < nodes.length) {
+          const { node, text, block } = nodes[idx];
+          light(block);
+          const take = Math.min(budget, text.length - pos);
+          pos += take;
+          budget -= take;
+          node.data = text.slice(0, pos);
+          if (pos >= text.length) {
+            idx++;
+            pos = 0;
+          }
+        }
+        if (idx < nodes.length) {
+          t = window.setTimeout(tick, 16);
+        } else {
+          finish();
+        }
+      };
+      document.addEventListener("keydown", finish);
+      document.addEventListener("pointerdown", finish);
+      tick();
+    };
+
+    const reveal = () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("keydown", reveal);
+      document.removeEventListener("pointerdown", reveal);
+      out.textContent = "";
+      window.setTimeout(() => {
+        root.classList.remove("intro");
+        typeHomeRest();
+      }, 220);
+    };
+
+    const addLine = (nickName) => {
+      const line = document.createElement("div");
+      const nick = document.createElement("span");
+      nick.className = "nick";
+      nick.textContent = "<" + nickName + ">";
+      line.appendChild(nick);
+      line.appendChild(document.createTextNode(" "));
+      out.appendChild(line);
+      return line;
+    };
+
+    const typeLine = (lineIndex) => {
+      const prev = out.querySelector(".flowing");
+      if (prev) prev.classList.remove("flowing");
+      if (lineIndex >= LINES.length) {
+        timer = window.setTimeout(reveal, 1200);
+        return;
+      }
+      const line = addLine("tom");
+      line.classList.add("flowing");
+      const txt = document.createTextNode("");
+      line.appendChild(txt);
+      line.appendChild(cursor);
+      const message = LINES[lineIndex];
+      const tick = (i) => {
+        txt.data = message.slice(0, i + 1);
+        if (i + 1 < message.length) {
+          timer = window.setTimeout(() => tick(i + 1), 34);
+        } else {
+          timer = window.setTimeout(() => typeLine(lineIndex + 1), 460);
+        }
+      };
+      timer = window.setTimeout(() => tick(0), 260);
+    };
+
+    live.textContent = "tom says: " + LINES.join(" ");
+    document.addEventListener("keydown", reveal);
+    document.addEventListener("pointerdown", reveal);
+    timer = window.setTimeout(() => typeLine(0), 600);
+  }
+</script>
+
+<style>
+  .name {
+    margin: 0;
+    font-size: clamp(40px, 9vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .role {
+    margin: 0.5rem 0 1.5rem;
+    font-size: 20px;
+  }
+
+  /* text being typed in glows green, then settles back to the normal color */
+  .home-rest :is(p, li, span, a),
+  #intro-out :is(div, span) {
+    transition: color 1.2s ease-out;
+  }
+
+  .home-rest .flowing,
+  .home-rest .flowing *,
+  #intro-out .flowing,
+  #intro-out .flowing * {
+    color: var(--green);
+    transition: none;
+  }
+
+  .home-rest ul a {
+    font-weight: 700;
+  }
+
+  .home-rest li {
+    margin: 0.5rem 0;
+  }
+
+  .home-rest li > a {
+    display: inline-block;
+    min-width: 9ch;
+    margin-right: 2ch;
+  }
+</style>
